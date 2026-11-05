@@ -1,0 +1,36 @@
+{
+  "name": "ai-sdlc-copilot",
+  "version": "1.0.0",
+  "description": "AI-Assisted SDLC platform: requirements -> architecture -> tasks -> QA tests with human review gates, review-feedback agent, and ADO/Jira integration",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "test:e2e": "playwright test",
+    "load": "node scripts/load-test.mjs",
+    "test:all": "npm test && npm run test:e2e && npm run load"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jszip": "^3.10.1",
+    "mammoth": "^1.9.0",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

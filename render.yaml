@@ -1,0 +1,33 @@
+# Render Blueprint: New > Blueprint > pick this repo. Render prompts for the values marked sync: false.
+services:
+  - type: web
+    name: ai-sdlc-copilot
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: APP_SECRET
+        generateValue: true
+      # Password for the seeded demo accounts (admin/pm/architect/dev/qa @demo.local). 12+ characters.
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: SEED_DEMO_USERS
+        value: "true"
+      - key: AI_MODE
+        value: auto
+      # Optional: the bootcamp Azure OpenAI deployment. Leave empty to use the offline engine.
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_DEPLOYMENT
+        value: gpt-5-5
+      - key: AZURE_OPENAI_API_VERSION
+        value: "2024-10-21"
