@@ -64,6 +64,7 @@ The handbook's sample input files are in [samples/](samples/).
 | Data integrity | `test/integrity.test.js` | Concurrent generation and approval, immutable history, tampered edits, rejected uploads leave nothing behind, project isolation, lockout and deactivation, audit coverage |
 | Browser end-to-end | `e2e/workflow.spec.js` | Sign-in errors, upload rejection in the UI, XSS safety, feedback agent, approvals, role restrictions, Mermaid diagram, inline edit, Excel download |
 | Load | `scripts/load-test.mjs` | 20 projects end to end concurrently, plus 200 reads from 50 users; fails if a p95 budget is missed |
+| Team handbook | [docs/HANDBOOK.md](docs/HANDBOOK.md) · [PDF](docs/AI-SDLC-Copilot-Handbook.pdf) | File map, agents, where to change what, BA/QA/Developer guides, Playwright planner/generator/healer agents (rebuild the PDF with `python scripts/build-handbook-pdf.py`) |
 | Test-case catalog | [docs/QA-Test-Catalog.xlsx](docs/QA-Test-Catalog.xlsx) | 70 cases (functional, non-functional, natural-language edge cases), each mapped to its automated test, with a live summary |
 | Panel stress inputs | [samples/panel-pack/](samples/panel-pack/PANEL-SCENARIO.md) | 10 adversarial files and the expected behaviour at every step |
 
