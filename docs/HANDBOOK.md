@@ -25,8 +25,8 @@ Without Azure OpenAI settings the app uses the **offline engine**: rule-based ve
 |---|---|
 | `npm start` | Run the app on port 3000 (`PORT` changes it) |
 | `npm run dev` | Run with auto-restart on file changes |
-| `npm test` | API, agent unit and data-integrity tests (64 tests, about 10 s) |
-| `npm run test:e2e` | Playwright browser tests in headless Microsoft Edge (9 tests) |
+| `npm test` | API, agent unit and data-integrity tests (65 tests, about 10 s) |
+| `npm run test:e2e` | Playwright browser tests in headless Microsoft Edge (15 tests) |
 | `npm run load` | Load test with latency budgets (fails if a budget is missed) |
 | `npm run test:all` | All three, in order |
 
@@ -252,7 +252,8 @@ Export page: Excel workbook (all stages, traceability, approvals), Markdown repo
 | Agent unit | `test/agents.test.js` | `npm test` | Each agent; 17 natural-language feedback edge cases |
 | Data integrity | `test/integrity.test.js` | `npm test` | Concurrent generation/approval, immutable history, isolation, lockout, audit |
 | API end-to-end | `test/api.test.js` | `npm test` | Whole workflow and panel stress pack |
-| Browser | `e2e/workflow.spec.js` | `npm run test:e2e` | Real clicks in headless Edge; report in `e2e-report/index.html` |
+| Browser: positive flow | `e2e/positive-flow.spec.js` | `npm run test:e2e` | The full happy path a team performs: PM → Architect → PM → QA → exports and audit |
+| Browser: guardrails & roles | `e2e/workflow.spec.js` | `npm run test:e2e` | Rejections, XSS, feedback agent, role limits; report in `e2e-report/index.html` |
 | Load | `scripts/load-test.mjs` | `npm run load` | 20 projects end to end + 200 reads from 50 users, p95 budgets |
 | Test-case catalog | `docs/QA-Test-Catalog.xlsx` | Excel | 70 cases mapped to automated tests; Status column drives the Summary |
 | Stress inputs | `samples/panel-pack/` | Upload by hand | 10 hostile files; expected results in `PANEL-SCENARIO.md` |
@@ -329,6 +330,7 @@ Browser (public/app.js)  --fetch /api/... + X-Requested-With header-->  server.j
 | `PORT` / `HOST` | 3000 / 127.0.0.1 | Listen address (Render: 0.0.0.0 automatically) |
 | `APP_SECRET` | random per start | Signs sessions, encrypts tokens; required in production (32+ chars) |
 | `DEMO_PASSWORD` / `SEED_DEMO_USERS` | Bootcamp@2026 / true | Demo accounts; production refuses the default |
+| `SEED_DEMO_PROJECT` | false (Render: true) | On start, recreate the sample project fully approved through all four gates (`src/seed-demo.js`) |
 | `AZURE_OPENAI_ENDPOINT`, `_API_KEY`, `_DEPLOYMENT`, `_API_VERSION` | –, –, gpt-5-5, 2024-10-21 | AI engine |
 | `AI_MODE` | auto | `auto` = AI if configured, `mock` = always offline |
 | `CRITIC_SELF_REVISE_THRESHOLD` | 70 | Critic score that triggers one AI self-revision |
@@ -339,7 +341,7 @@ Browser (public/app.js)  --fetch /api/... + X-Requested-With header-->  server.j
 ### 8.4 Git and deployment
 
 - Work on a branch, open a pull request, merge to `main`. Every push to `main` redeploys the hosted site automatically (Render reads `render.yaml`).
-- Hosted data (projects, uploads) resets on every redeploy on the free plan; don't push just before a demo.
+- Hosted data (projects, uploads) resets on every redeploy or sleep on the free plan. The sample project **GlobalCommerce Express Checkout (sample)** is recreated automatically on every start (`SEED_DEMO_PROJECT=true`); anything else you create is lost.
 - Secrets live only in `.env` (local) or Render → Environment (hosted). Never commit them; `.gitignore` already excludes `.env` and `data/`.
 - Production refuses to start without a strong `APP_SECRET` and a non-default `DEMO_PASSWORD`; the Render log says which.
 

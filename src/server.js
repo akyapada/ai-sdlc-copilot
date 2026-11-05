@@ -7,6 +7,7 @@ import { config, aiEnabled } from './config.js';
 import { seedUsers } from './db.js';
 import { authenticate, csrfGuard } from './security.js';
 import { engineName } from './llm.js';
+import { seedDemoProject, seedStatus } from './seed-demo.js';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import projectRoutes from './routes/projects.js';
@@ -36,7 +37,7 @@ export function createApp() {
   app.use('/api', csrfGuard);
   app.use('/api', (req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next(); });
 
-  app.get('/api/health', (req, res) => res.json({ ok: true, engine: engineName(), aiEnabled: aiEnabled() }));
+  app.get('/api/health', (req, res) => res.json({ ok: true, engine: engineName(), aiEnabled: aiEnabled(), sampleProject: seedStatus.state }));
   app.use('/api/auth', authRoutes);
   app.use('/api/admin', authenticate, adminRoutes);
   app.use('/api/projects', authenticate, projectRoutes);
@@ -58,5 +59,6 @@ export function createApp() {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   createApp().listen(config.port, config.host, () => {
     console.log(`AI SDLC Copilot running at http://${config.host}:${config.port}  (AI engine: ${engineName()})`);
+    seedDemoProject();
   });
 }

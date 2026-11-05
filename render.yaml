@@ -20,6 +20,9 @@ services:
         sync: false
       - key: SEED_DEMO_USERS
         value: "true"
+      # Recreate the completed sample project on every start (free plan has no persistent disk).
+      - key: SEED_DEMO_PROJECT
+        value: "true"
       - key: AI_MODE
         value: auto
       # Optional: the bootcamp Azure OpenAI deployment. Leave empty to use the offline engine.

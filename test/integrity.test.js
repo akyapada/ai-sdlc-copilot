@@ -126,3 +126,22 @@ test('account locks after 5 failed logins; admin unlock restores access; deactiv
   await admin.call('PATCH', `/admin/users/${id}`, { body: { active: false } });
   assert.equal((await u.call('GET', '/projects')).status, 401, 'existing session rejected after deactivation');
 });
+
+test('demo seed creates the sample project with all four gates approved, once', async () => {
+  process.env.SEED_DEMO_PROJECT = 'true';
+  const { seedDemoProject, DEMO_PROJECT_NAME } = await import('../src/seed-demo.js');
+  const first = await seedDemoProject();
+  assert.equal(first.state, 'ready', first.error || '');
+  const again = await seedDemoProject();
+  assert.equal(again.projectId, first.projectId, 'idempotent: no duplicate project');
+  const { qa } = ctx.users;
+  const list = (await qa.call('GET', '/projects')).body.filter((p) => p.name === DEMO_PROJECT_NAME);
+  assert.equal(list.length, 1, 'QA is a member and sees exactly one sample project');
+  const wf = list[0].workflow;
+  for (const s of ['requirements', 'architecture', 'tasks', 'tests']) assert.equal(wf.stages[s].latestStatus, 'APPROVED', s);
+  const trace = (await qa.call('GET', `/projects/${first.projectId}/traceability`)).body;
+  assert.equal(trace.summary.fullyCovered, trace.summary.requirements);
+  const arch = (await qa.call('GET', `/projects/${first.projectId}/stages/architecture`)).body.artifact;
+  assert.equal(arch.reviews[0].reviewer_name, 'Arun (Architect)', 'approved by the architect, not a system user');
+  delete process.env.SEED_DEMO_PROJECT;
+});
